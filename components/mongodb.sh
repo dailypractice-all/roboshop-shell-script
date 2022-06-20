@@ -4,10 +4,7 @@ systemctl enable mongod
 systemctl start mongod
 # Update Listen IP address from 127.0.0.1 to 0.0.0.0 in config file
 
-# Config file: `/etc/mongod.conf`
-# then restart the service
-vim /etc/mongod.conf
-# will add vim command to edit the file and will change the ip address 0.0.0.0 manually
+sed -i -e 's/127.0.0.1/0.0.0.0/' /etc/mongod.conf
 systemctl restart mongod
 
 # Every Database needs the schema to be loaded for the application to work.
