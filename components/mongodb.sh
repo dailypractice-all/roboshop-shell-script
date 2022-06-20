@@ -6,7 +6,8 @@ systemctl start mongod
 
 # Config file: `/etc/mongod.conf`
 # then restart the service
-
+vim /etc/mongod.conf
+# will add vim command to edit the file and will change the ip address 0.0.0.0 manually
 systemctl restart mongod
 
 # Every Database needs the schema to be loaded for the application to work.
@@ -14,7 +15,9 @@ systemctl restart mongod
 # Download the schema and load it.
 curl -s -L -o /tmp/mongodb.zip "https://github.com/roboshop-devops-project/mongodb/archive/main.zip"
 cd /tmp
-unzip mongodb.zip
+unzip -o mongodb.zip
+# in unzip -o mongodb.zip in this command i added -o to overwite the file and give permission to move forward
+
 cd mongodb-main
 mongo < catalogue.js
 mongo < users.js
