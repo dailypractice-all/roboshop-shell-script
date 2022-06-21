@@ -10,7 +10,7 @@ mv shipping-main shipping
 cd shipping
 mvn clean package
 mv target/shipping-1.0.jar shipping.jar
-
+sed -i -e 's/CARTENDPOINT/cart.dailypractice.internal/' -e 's/DBHOST/mysql.dailypractice.internal/' /home/roboshop/shipping/systemd.service
 
 mv /home/roboshop/shipping/systemd.service /etc/systemd/system/shipping.service
 systemctl daemon-reload
