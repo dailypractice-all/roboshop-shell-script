@@ -13,3 +13,4 @@ mv static/* .
 rm -rf frontend-main README.md
 mv localhost.conf /etc/nginx/default.d/roboshop.conf
 
+sed -i -e '/catalogue/ s/localhost/catalogue.dailypractice.internal/' -e '/user/ s/localhost/user.dailypractice.internal/ -e '/cart/ s/localhost/cart.dailypractice.internal/' /etc/nginx/default.d/roboshop.conf
