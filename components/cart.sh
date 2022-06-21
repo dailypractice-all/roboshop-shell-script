@@ -13,8 +13,6 @@ npm install
 
 sed -i -e 's/REDIS_ENDPOINT/redis.dailypractice.internal/' -e 's/CATALOGUE_ENDPOINT/catalogue.dailypractice.internal/' /home/roboshop/cart/systemd.service
 
-Update `REDIS_ENDPOINT` with REDIS server IP Address
-Update `CATALOGUE_ENDPOINT` with Catalogue server IP address
 
 mv /home/roboshop/cart/systemd.service /etc/systemd/system/cart.service
 systemctl daemon-reload
