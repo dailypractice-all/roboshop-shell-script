@@ -9,6 +9,7 @@ MYSQL_DEFAULT_PASSWORD=$(grep 'temporary password' /var/log/mysqld.log | awk '{p
 echo "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';" | mysql --connect-expired-password -uroot -p"${MYSQL_DEFAULT_PASSWORD}"
 echo "uninstall plugin validate_password;" | mysql -uroot -p"${MYSQL_PASSWORD}"
 
+# so till now we were using sudo make mysql in that we are using environment variable so now for this we will use sudo -E make mysql then only the variable will work
 
 curl -s -L -o /tmp/mysql.zip "https://github.com/roboshop-devops-project/mysql/archive/main.zip"
 cd /tmp
