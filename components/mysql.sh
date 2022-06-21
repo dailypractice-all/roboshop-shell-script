@@ -10,16 +10,8 @@ echo "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';" >tmp/mys
 mysql --connect-expired-password -uroot -p"${MYSQL_DEFAULT_PASSWORD}" <tmp/mysql
 
 
-# /var/log/mysqld.log
+curl -s -L -o /tmp/mysql.zip "https://github.com/roboshop-devops-project/mysql/archive/main.zip"
 
-# Next, We need to change the default root password in order to start using the database service. Use password `RoboShop@1` or any other as per your choice. Rest of the options you can choose `No`
-
-# mysql_secure_installation
-# mysql -uroot -pRoboShop@1
-
-#curl -s -L -o /tmp/mysql.zip "https://github.com/roboshop-devops-project/mysql/archive/main.zip"
-#Load the schema for Services.
-#cd /tmp
-#unzip mysql.zip
-#cd mysql-main
-#mysql -u root -pRoboShop@1 <shipping.sql
+cd /tmp
+unzip mysql.zip
+cd mysql-main
