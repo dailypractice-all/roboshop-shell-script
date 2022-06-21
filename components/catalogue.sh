@@ -16,5 +16,5 @@ sed -i -e 's/MONGO_DNSNAME/mongodb.dailypractice.internal/' /home/roboshop/catal
 # Now, lets set up the service with systemctl.
 mv /home/roboshop/catalogue/systemd.service /etc/systemd/system/catalogue.service
 systemctl daemon-reload
-systemctl start catalogue
+systemctl restart catalogue
 systemctl enable catalogue

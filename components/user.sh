@@ -18,5 +18,5 @@ sed -i -e 's/REDIS_ENDPOINT/redis.dailypractice.internal/' -e 's/MONGO_ENDPOINT/
 
 mv /home/roboshop/user/systemd.service /etc/systemd/system/user.service
 systemctl daemon-reload
-systemctl start user
+systemctl restart user
 systemctl enable user
