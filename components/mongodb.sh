@@ -1,9 +1,13 @@
-USER_ID=$(id -u)
-if [ $USER_ID -ne 0 ]; then
-  echo You are Non root user
-  echo You can run this script as root user or with sodo
-  exit 1
-fi
+CHECK_ROOT() {
+  USER_ID=$(id -u)
+  if [ $USER_ID -ne 0 ]; then
+    echo You are Non root user
+    echo You can run this script as root user or with sodo
+    exit 1
+  fi
+}
+
+CHECK_ROOT
 
 curl -s -o /etc/yum.repos.d/mongodb.repo https://raw.githubusercontent.com/roboshop-devops-project/mongodb/main/mongo.repo
 yum install -y mongodb-org
