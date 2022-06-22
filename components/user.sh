@@ -1,3 +1,10 @@
+USER_ID=$(id -u)
+if [ $USER_ID -ne 0 ]; then
+  echo You are Non root user
+  echp You can rin this script as root user or with sodo
+  exit 1
+fi
+
 curl -sL https://rpm.nodesource.com/setup_lts.x | bash
 yum install nodejs -y
 
