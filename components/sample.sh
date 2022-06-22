@@ -1,10 +1,9 @@
 #!bin/bash
 
-n%2 = $1
-if [ $1 -eq 0 ]; then
-  echo -e "\e[31mFAILED\e[0m"
-  exit 2
+
+if
+  echo [ (n % 2) ]
+  echo printf(“It’s an odd number”);
 else
-  echo -e "\e[32mSUCESS\e[0m"
+  printf(“It’s an even number”);
 fi
-}
