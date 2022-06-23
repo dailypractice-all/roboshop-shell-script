@@ -91,6 +91,7 @@ NGINX() {...}
 MAVEN() {
 
   CHECK_ROOT
+
   PRINT "Installing Maven"
   yum install maven -y &>>${LOG}
   CHECK_STAT $?
@@ -98,6 +99,9 @@ MAVEN() {
   APP_COMMON_SETUP
 
   PRINT "Configure ${COMPONENT} content "
-  mv ${COMPONENT}-main ${COMPONENT} && cd ${COMPONENT} &>>${LOG} && mvn clean package && mv target/${COMPONENT}-1.0.jar ${COMPONENT}.jar &>>${LOG}
+  mv ${COMPONENT}-main ${COMPONENT} && cd ${COMPONENT} && mvn clean package &>>${LOG} && mv target/${COMPONENT}-1.0.jar ${COMPONENT}.jar &>>${LOG}
   CHECK_STAT $?
+
+  SYSTEMMD
+
 }
