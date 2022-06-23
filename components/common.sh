@@ -55,14 +55,11 @@ SYSTEMMD() {
     CHECK_STAT $?
 
     PRINT "Setup SystemD Configuraton "
-    mv /home/roboshop/${COMPONENT}/systemd.service /etc/systemd/system/${COMPONENT}.service &>>${LOG}
+    mv /home/roboshop/${COMPONENT}/systemd.service /etc/systemd/system/${COMPONENT}.service && systemctl daemon-reload &>>${LOG}
     CHECK_STAT $?
 
-    systemctl daemon-reload
-    systemctl restart ${COMPONENT}
-
     PRINT "Start ${COMPONENT} Service "
-    systemctl enable ${COMPONENT} &>>${LOG}
+    systemctl enable ${COMPONENT} && systemctl restart ${COMPONENT} &>>${LOG}
     CHECK_STAT $?
 
 NODEJS() {
@@ -86,7 +83,7 @@ NODEJS() {
   SYSTEMMD
 }
 
-NGINX() `{...}`
+NGINX() {...}
 
 MAVEN() {
 
