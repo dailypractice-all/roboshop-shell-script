@@ -25,6 +25,46 @@ PRINT() {
   echo "$1"
 }
 
+APP_COMMON_SETUP() {
+    PRINT "Creating Application User "
+    id roboshop &>>${LOG}
+    if [ $? -ne 0 ]; then
+      useradd roboshop &>>${LOG}
+    fi
+    CHECK_STAT $?
+
+    PRINT "Downloading content of ${COMPONENT} "
+    curl -s -L -o /tmp/${COMPONENT}.zip "https://github.com/roboshop-devops-project/${COMPONENT}/archive/main.zip" &>>${LOG}
+    CHECK_STAT $?
+
+    cd /home/roboshop
+
+    PRINT "Removing all content "
+    rm -rf ${COMPONENT} &>>${LOG}
+    CHECK_STAT $?
+
+    PRINT "Extract ${COMPONENT} Zip "
+    unzip /tmp/${COMPONENT}.zip &>>${LOG}
+    CHECK_STAT $?
+}
+
+SYSTEMMD() {
+
+    PRINT "Updating SystemD Configuraton"
+    sed -i -e 's/REDIS_ENDPOINT/redis.dailypractice.internal/' -e 's/CATALOGUE_ENDPOINT/catalogue.dailypractice.internal/' -e 's/MONGO_ENDPOINT/mongodb.dailypractice.internal/' -e 's/MONGO_DNSNAME/mongodb.dailypractice.internal/' /home/roboshop/${COMPONENT}/systemd.service &>>${LOG}
+    CHECK_STAT $?
+
+    PRINT "Setup SystemD Configuraton "
+    mv /home/roboshop/${COMPONENT}/systemd.service /etc/systemd/system/${COMPONENT}.service &>>${LOG}
+    CHECK_STAT $?
+
+    systemctl daemon-reload
+    systemctl restart ${COMPONENT}
+
+    PRINT "Start ${COMPONENT} Service "
+    systemctl enable ${COMPONENT} &>>${LOG}
+    CHECK_STAT $?
+
 NODEJS() {
 
   CHECK_ROOT
@@ -37,79 +77,27 @@ NODEJS() {
   yum install nodejs -y &>>${LOG}
   CHECK_STAT $?
 
-  PRINT "Creating Application User "
-  id roboshop &>>${LOG}
-  if [ $? -ne 0 ]; then
-    useradd roboshop &>>${LOG}
-  fi
-  CHECK_STAT $?
-
-  PRINT "Downloading content of ${COMPONENT} "
-  curl -s -L -o /tmp/${COMPONENT}.zip "https://github.com/roboshop-devops-project/${COMPONENT}/archive/main.zip" &>>${LOG}
-  CHECK_STAT $?
-
-  cd /home/roboshop
-
-  PRINT "Removing all content "
-  rm -rf ${COMPONENT} &>>${LOG}
-  CHECK_STAT $?
-
-  PRINT "Extract ${COMPONENT} Zip "
-  unzip /tmp/${COMPONENT}.zip &>>${LOG}
-  CHECK_STAT $?
-
-  mv ${COMPONENT}-main ${COMPONENT}
-  cd ${COMPONENT}
+  APP_COMMON_SETUP
 
   PRINT "Installing ${COMPONENT} dependencies for ${COMPONENT} component "
-  npm install &>>${LOG}
+  mv ${COMPONENT}-main ${COMPONENT} && cd ${COMPONENT} && npm install &>>${LOG}
   CHECK_STAT $?
 
-  PRINT "Updating SystemD Configuraton"
-  sed -i -e 's/REDIS_ENDPOINT/redis.dailypractice.internal/' -e 's/CATALOGUE_ENDPOINT/catalogue.dailypractice.internal/' -e 's/MONGO_ENDPOINT/mongodb.dailypractice.internal/' -e 's/MONGO_DNSNAME/mongodb.dailypractice.internal/' /home/roboshop/${COMPONENT}/systemd.service &>>${LOG}
-  CHECK_STAT $?
-
-  PRINT "Setup SystemD Configuraton "
-  mv /home/roboshop/${COMPONENT}/systemd.service /etc/systemd/system/${COMPONENT}.service &>>${LOG}
-  CHECK_STAT $?
-
-  systemctl daemon-reload
-  systemctl restart ${COMPONENT}
-
-  PRINT "Start ${COMPONENT} Service "
-  systemctl enable ${COMPONENT} &>>${LOG}
-  CHECK_STAT $?
+  SYSTEMMD
 }
 
-NGINX() {
+NGINX() {...}
+
+MAVEN() {
+
   CHECK_ROOT
-
-  PRINT "Installing Nodejs"
-  yum install nginx -y &>>${LOG}
+  PRINT "Installing Maven"
+  yum install maven -y &>>${LOG}
   CHECK_STAT $?
 
-  PRINT "Downloading content of ${COMPONENT} "
-  curl -s -L -o /tmp/${COMPONENT}.zip "https://github.com/roboshop-devops-project/${COMPONENT}/archive/main.zip" &>>${LOG}
-  CHECK_STAT $?
-
-  PRINT "Clean OLD Content"
-  cd /usr/share/nginx/html &>>${LOG}
-  rm -rf * &>>${LOG}
-  CHECK_STAT $?
-
-  PRINT "Extract ${COMPONENT} Zip "
-  unzip /tmp/${COMPONENT}.zip &>>${LOG}
-  CHECK_STAT $?
+  APP_COMMON_SETUP
 
   PRINT "Configure ${COMPONENT} content "
-  mv ${COMPONENT}-main/* . && mv static/* . && rm -rf ${COMPONENT}-main README.md && mv localhost.conf /etc/nginx/default.d/roboshop.conf &>>${LOG}
-  CHECK_STAT $?
-
-  PRINT "Update ${COMPONENT} config file "
-  sed -i -e '/catalogue/ s/localhost/catalogue.dailypractice.internal/' -e '/user/ s/localhost/user.dailypractice.internal/' -e '/cart/ s/localhost/cart.dailypractice.internal/' -e '/shipping/ s/localhost/shipping.dailypractice.internal/' -e '/payment/ s/localhost/payment.dailypractice.internal/' /etc/nginx/default.d/roboshop.conf &>>${LOG}
-  CHECK_STAT $?
-
-  PRINT "Restart ${COMPONENT} Service "
-  systemctl enable nginx && systemctl restart nginx &>>${LOG}
+  mv ${COMPONENT}-main ${COMPONENT} && cd ${COMPONENT} &>>${LOG} && mvn clean package && mv target/${COMPONENT}-1.0.jar ${COMPONENT}.jar &>>${LOG}
   CHECK_STAT $?
 }
