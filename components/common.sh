@@ -79,3 +79,4 @@ NODEJS() {
   PRINT "Start ${COMPONENT} Service "
   systemctl enable ${COMPONENT} &>>${LOG}
   CHECK_STAT $?
+}
