@@ -29,7 +29,7 @@ NODEJS() {
 
   CHECK_ROOT
 
-  PRINT "setting up NodeJS YUM Repo is "
+  PRINT "setting up NodeJS YUM Repo "
   curl -sL https://rpm.nodesource.com/setup_lts.x | bash &>>${LOG}
   CHECK_STAT $?
 
@@ -76,6 +76,6 @@ NODEJS() {
   systemctl daemon-reload
   systemctl restart ${COMPONENT}
 
-  PRINT "Start Cart Service "
+  PRINT "Start ${COMPONENT} Service "
   systemctl enable ${COMPONENT} &>>${LOG}
   CHECK_STAT $?
