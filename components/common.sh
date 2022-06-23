@@ -86,7 +86,7 @@ NODEJS() {
   SYSTEMMD
 }
 
-NGINX() {...}
+NGINX() `{...}`
 
 MAVEN() {
 
