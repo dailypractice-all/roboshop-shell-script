@@ -83,7 +83,11 @@ NODEJS() {
   SYSTEMMD
 }
 
-NGINX() {...}
+NGINX() {
+  APP_COMMON_SETUP
+
+  SYSTEMMD
+}
 
 
 MAVEN() {
@@ -101,4 +105,5 @@ MAVEN() {
   CHECK_STAT $?
 
   SYSTEMMD
+}
 }
