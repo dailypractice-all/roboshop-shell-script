@@ -1,14 +1,14 @@
 #!bin/bash
 
-read -p "Enter Number: " num
-if [ $num % 2 -eq 0 ]
-then
-  echo "Even number"
+read -p "enter quantity :" qt
 
-elif [ $num % 2 -ne 0 ]
+if [ $qt -lt 1000 ]
 then
-  echo "Odd number"
-
-else
-  echo "nither even nor odd"
+  echo "No discount"
+elif [ $qt -lt 2000 ]
+then
+  echo "15% discount"
+elif [ $qt -gt 5000 ]
+then
+  echo "25% discount"
 fi
