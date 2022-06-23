@@ -2,6 +2,6 @@
 
 source components/common.sh
 
-COMPONENT=FRONTEND
+COMPONENT=frontend
 
 NGINX
