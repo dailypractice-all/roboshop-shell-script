@@ -66,7 +66,7 @@ NODEJS() {
   CHECK_STAT $?
 
   PRINT "Updating SystemD Configuraton"
-  sed -i -e 's/REDIS_ENDPOINT/redis.dailypractice.internal/' -e 's/CATALOGUE_ENDPOINT/catalogue.dailypractice.internal/' -e 's/MONGO_ENDPOINT/mongodb.dailypractice.internal/' /home/roboshop/${COMPONENT}/systemd.service &>>${LOG}
+  sed -i -e 's/REDIS_ENDPOINT/redis.dailypractice.internal/' -e 's/CATALOGUE_ENDPOINT/catalogue.dailypractice.internal/' -e 's/MONGO_ENDPOINT/mongodb.dailypractice.internal/' -e 's/MONGO_DNSNAME/mongodb.dailypractice.internal/' /home/roboshop/${COMPONENT}/systemd.service &>>${LOG}
   CHECK_STAT $?
 
   PRINT "Setup SystemD Configuraton "
