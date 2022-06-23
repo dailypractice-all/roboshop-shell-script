@@ -83,7 +83,12 @@ NODEJS() {
   SYSTEMMD
 }
 
-NGINX() {...}
+NGINX() {
+  PRINT "Organize ${COMPONENT} Content"
+  mv ${COMPONENT}-main/* . && mv static/* . && rm -rf ${COMPONENT}-main README.md && mv localhost.conf /etc/nginx/default.d/roboshop.conf
+  CHECK_STAT $?
+}
+
 
 MAVEN() {
 
@@ -100,5 +105,5 @@ MAVEN() {
   CHECK_STAT $?
 
   SYSTEMMD
-
+}
 }
