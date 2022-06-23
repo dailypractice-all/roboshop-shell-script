@@ -84,9 +84,39 @@ NODEJS() {
 }
 
 NGINX() {
-  APP_COMMON_SETUP
+  CHECK_ROOT
+  PRINT "Installing Nginx"
+  yum install nginx -y &>>${LOG}
+  CHECK_STAT $?
 
-  SYSTEMMD
+  PRINT "Download ${COMPONENT} Content"
+  curl -s -L -o /tmp/${COMPONENT}.zip "https://github.com/roboshop-devops-project/${COMPONENT}/archive/main.zip" &>>${LOG}
+  CHECK_STAT $?
+
+  PRINT "Clean OLD Content"
+  cd /usr/share/nginx/html
+  rm -rf * &>>${LOG}
+  CHECK_STAT $?
+
+  PRINT "Extract ${COMPONENT} Content"
+  unzip /tmp/${COMPONENT}.zip &>>${LOG}
+  CHECK_STAT $?
+
+  PRINT "Organize ${COMPONENT} Content"
+  mv ${COMPONENT}-main/* . && mv static/* . && rm -rf ${COMPONENT}-main README.md && mv localhost.conf /etc/nginx/default.d/roboshop.conf
+  CHECK_STAT $?
+
+  for backend in catalogue cart user shipping payment ; do
+  PRINT "Update Configuration for - $backend"
+  # Commented this as part of loop demo, However this single sed command is much better than loop approach
+  # sed -i -e '/catalogue/ s/localhost/catalogue.roboshop.internal/' -e '/user/ s/localhost/user.roboshop.internal/' -e '/cart/ s/localhost/cart.roboshop.internal/' -e '/payment/ s/localhost/payment.roboshop.internal/' -e '/shipping/ s/localhost/shipping.roboshop.internal/' /etc/nginx/default.d/roboshop.conf
+  sed -i -e "/$backend/ s/localhost/$backend.roboshop.internal/" /etc/nginx/default.d/roboshop.conf
+  CHECK_STAT $?
+  done
+
+  PRINT "Start Nginx Service"
+  systemctl enable nginx &>>${LOG} && systemctl restart nginx &>>${LOG}
+  CHECK_STAT $?
 }
 
 
