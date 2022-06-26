@@ -1,24 +1,42 @@
-
 source components/common.sh
 
 CHECK_ROOT
 
-curl -s -L -o /etc/yum.repos.d/mysql.repo https://raw.githubusercontent.com/roboshop-devops-project/mysql/main/mysql.repo
-yum install mysql-community-server -y
-systemctl enable mysqld
-systemctl restart mysqld
+if [ -z "${MYSQL_PASSWORD}" ]; then
+  echo "Need MYSQL_PASSWORD env variable"
+  exit 1
+fi
+
+PRINT "Configure YUM Repos"
+curl -s -L -o /etc/yum.repos.d/mysql.repo https://raw.githubusercontent.com/roboshop-devops-project/mysql/main/mysql.repo &>>${LOG}
+CHECK_STAT $?
+
+PRINT "Install MySQL"
+yum install mysql-community-server -y &>>${LOG}
+systemctl enable mysqld &>>${LOG} && systemctl start mysqld &>>${LOG}
+CHECK_STAT $?
 
 MYSQL_DEFAULT_PASSWORD=$(grep 'temporary password' /var/log/mysqld.log | awk '{print $NF}')
 
-# HERE TO SET THE DEFAULT PASSWORD RUN SUDO COMMAND WITH (grep 'temporary password' /var/log/mysqld.log | awk '{print $NF}') AND WILL GET THE TEMPORARY PASSWORD AND AWK IS USED TO GET PASSWORD TFROM COULMN AND $ NF IS USED FOR NTH FEILD IF WE USE $ THEN IT COLLRILATES TO COLUMN 1..... IT CONCLUED THAT IF WE RUN SOME COMMAND THE OUTPUT WHICH COMES IT GOES TO THE VARIABLE.
+echo show databases | mysql -uroot -p"${MYSQL_PASSWORD}" &>>${LOG}
+if [ $? -ne 0 ]; then
+  PRINT "RESET Root Password"
+  echo "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';" | mysql --connect-expired-password -uroot -p"${MYSQL_DEFAULT_PASSWORD}" &>>${LOG}
+  CHECK_STAT $?
+fi
 
-echo "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';" | mysql --connect-expired-password -uroot -p"${MYSQL_DEFAULT_PASSWORD}"
-echo "uninstall plugin validate_password;" | mysql -uroot -p"${MYSQL_PASSWORD}"
+echo show plugins  | mysql -uroot -p"${MYSQL_PASSWORD}" 2>>${LOG} | grep validate_password &>>${LOG}
+if [ $? -eq 0 ]; then
+  PRINT "Uninstall Password Validate Plugin"
+  echo "uninstall plugin validate_password;" | mysql -uroot -p"${MYSQL_PASSWORD}" &>>${LOG}
+  CHECK_STAT $?
+fi
 
-# so till now we were using sudo make mysql in that we are using environment variable so now for this we will use sudo -E make mysql then only the variable will work
+PRINT "Download Schema"
+curl -s -L -o /tmp/mysql.zip "https://github.com/roboshop-devops-project/mysql/archive/main.zip" &>>${LOG}
+CHECK_STAT $?
 
-curl -s -L -o /tmp/mysql.zip "https://github.com/roboshop-devops-project/mysql/archive/main.zip"
-cd /tmp
-unzip -o mysql.zip
-cd mysql-main
-mysql -u root -p"${MYSQL_PASSWORD}" <shipping.sql
+PRINT "Load Schema"
+cd /tmp && unzip -o mysql.zip &>>${LOG} && cd mysql-main && mysql -u root -p"${MYSQL_PASSWORD}" <shipping.sql &>>${LOG}
+CHECK_STAT $?
+
